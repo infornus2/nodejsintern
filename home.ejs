@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .like-button, .view-button {
+            cursor: pointer;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 4px;
+            border: none;
+            color: white;
+        }
+        .like-button {
+            background-color: #4CAF50;
+        }
+        .view-button {
+            background-color: #2196F3;
+        }
+        .logout-button {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome, <%= user.name %>!</h1>
+    <form action="/logout" method="post">
+        <button type="submit" class="logout-button">Logout</button>
+    </form>
+    <h2>Articles</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Body</th>
+                <th>Likes</th>
+                <th>Views</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% articles.forEach(article => { %>
+                <tr>
+                    <td><%= article.title %></td>
+                    <td><%= article.author %></td>
+                    <td><%= article.body %></td>
+                    <td id="likes-<%= article.id %>"><%= article.likes %></td>
+                    <td id="views-<%= article.id %>"><%= article.views %></td>
+                    <td>
+                        <button class="like-button" onclick="likeArticle(<%= article.id %>)">Like</button>
+                        <button class="view-button" onclick="viewArticle(<%= article.id %>)">View</button>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+    <script>
+    function likeArticle(articleId) {
+        fetch(`/like/${articleId}`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById(`likes-${data.id}`).textContent = data.likes;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    function viewArticle(articleId) {
+        fetch(`/view/${articleId}`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById(`views-${data.id}`).textContent = data.views;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+    </script>
+</body>
+</html>
